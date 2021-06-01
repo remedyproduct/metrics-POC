@@ -1,8 +1,11 @@
+import logging
 from functools import reduce, wraps
 
 import jwt
 from flask import Flask, abort, g, jsonify, redirect, request, url_for
 from optimizely import optimizely
+
+logger = logging.getLogger("app")
 
 JWT_SECRET = "secret"
 
@@ -16,7 +19,8 @@ def auth(fn):
 
         try:
             g.user = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
-        except jwt.InvalidTokenError:
+        except jwt.InvalidTokenError as err:
+            logger.error(err)
             abort(404)
         return fn(*args, **kwargs)
 
@@ -24,7 +28,9 @@ def auth(fn):
 
 
 application = Flask(__name__)
-optimizely_client = optimizely.Optimizely(sdk_key="DPzcaJRvhpcagqKUHdM1z")
+optimizely_client = optimizely.Optimizely(
+    sdk_key="DPzcaJRvhpcagqKUHdM1z", logger=logger
+)
 
 
 @application.route("/")
@@ -72,6 +78,7 @@ def feature():
     )
 
     if not is_enabled:
+        logger.warning("feature disabled")
         abort(404)
 
     items = optimizely_client.get_feature_variable(
