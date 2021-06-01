@@ -3,9 +3,9 @@ RUN pip install pipenv
 WORKDIR /application
 
 COPY Pipfile Pipfile.lock ./
-RUN pipenv install --deploy
+RUN pipenv install --deploy --system
 COPY ./ ./
 
 EXPOSE 5000
 
-CMD ["pipenv", "run", "python", "application.py"]
+CMD ["python", "application.py"]

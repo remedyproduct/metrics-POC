@@ -8,11 +8,7 @@ optimizely_client = optimizely.Optimizely(
 
 @application.route('/')
 def index():
-  return redirect(url_for("home"))
-
-@application.route('/home')
-def home():
-  return "Welcome!"
+  return redirect(url_for("health"))
 
 @application.route('/health')
 def health():
@@ -20,16 +16,6 @@ def health():
     return 'Optimizely client is initialized.'
   else:
     return 'Error optimizely client initialization.'
-
-@application.route('/health/feature')
-def feature_health():
-  is_enabled = optimizely_client.is_feature_enabled('Experiment', '1237')
-
-  if is_enabled:
-    return 'Experiment is enabled.'
-  else:
-    return 'Experiment is disabled.'
-
 
 @application.route('/feature')
 def feature():
