@@ -1,32 +1,83 @@
-from flask import Flask, redirect, url_for
+from functools import reduce, wraps
+
+import jwt
+from flask import Flask, abort, g, jsonify, redirect, request, url_for
 from optimizely import optimizely
 
+JWT_SECRET = "secret"
+
+
+def auth(fn):
+    @wraps(fn)
+    def decorator(*args, **kwargs):
+        token = request.headers.get("authorization", None)
+        if token is None:
+            abort(404)
+
+        try:
+            g.user = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
+        except jwt.InvalidTokenError:
+            abort(404)
+        return fn(*args, **kwargs)
+
+    return decorator
+
+
 application = Flask(__name__)
-optimizely_client = optimizely.Optimizely(
-    sdk_key='DPzcaJRvhpcagqKUHdM1z'
-)
+optimizely_client = optimizely.Optimizely(sdk_key="DPzcaJRvhpcagqKUHdM1z")
 
-@application.route('/')
+
+@application.route("/")
 def index():
-  return redirect(url_for("health"))
+    return redirect(url_for("health"))
 
-@application.route('/health')
+
+@application.route("/health")
 def health():
-  if optimizely_client.is_valid:
-    return 'Optimizely client is initialized.'
-  else:
-    return 'Error optimizely client initialization.'
+    status = dict(http=True, optimizely=False)
 
-@application.route('/feature')
+    if optimizely_client.is_valid:
+        status["optimizely"] = True
+
+    return (
+        jsonify(status),
+        200 if reduce(lambda v, acc: acc & v, status.values(), True) else 500,
+    )
+
+
+@application.route("/login", methods=["POST"])
+def login():
+    email = request.json.get("email", None)
+    location = request.json.get("location", None)
+    age = request.json.get("age", None)
+
+    if email is None or location is None or age is None:
+        abort(404)
+
+    token = jwt.encode(
+        {"email": email, "location": location, "age": age},
+        JWT_SECRET,
+        algorithm="HS256",
+    )
+
+    return jsonify(token=token)
+
+
+@application.route("/feature", methods=["GET"])
+@auth
 def feature():
-  is_enabled = optimizely_client.is_feature_enabled('Experiment', '1237')
+    is_enabled = optimizely_client.is_feature_enabled(
+        "recommendations", g.user["email"], g.user
+    )
 
-  if is_enabled:
-      enable = optimizely_client.get_feature_variable('Experiment', 'AWESOME', '1237')
+    if not is_enabled:
+        abort(404)
 
-      if enable:
-        return "Awesome FEATURE!"
+    items = optimizely_client.get_feature_variable(
+        "recommendations", "items", g.user["email"], g.user
+    )
 
-  return "FEATURE!"
+    return jsonify(items=items)
 
-application.run(debug=True, host='0.0.0.0')
+
+application.run(debug=True, host="0.0.0.0")
