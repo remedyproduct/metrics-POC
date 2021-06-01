@@ -34,10 +34,11 @@ def index():
 
 @application.route("/health")
 def health():
-    status = dict(http=True, optimizely=False)
+    status = dict(http=True, optimizely=True)
 
-    if optimizely_client.is_valid:
-        status["optimizely"] = True
+    opt_config = optimizely_client.get_optimizely_config()
+    if opt_config is None:
+        status["optimizely"] = False
 
     return (
         jsonify(status),
