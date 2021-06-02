@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "1ce634a2f7332b632a1ab7e8383d2744a8f46c39edf2b1e14088f0886d30de47"
+            "sha256": "51a80272ec9f69a2b298ddb371522276bfd87ec4196dcee9947e9d88a66b8844"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -126,6 +126,14 @@
             "index": "pypi",
             "version": "==2.0.1"
         },
+        "flask-cors": {
+            "hashes": [
+                "sha256:74efc975af1194fc7891ff5cd85b0f7478be4f7f59fe158102e91abb72bb4438",
+                "sha256:b60839393f3b84a0f3746f6cdca56c1ad7426aa738b70d6c61375857823181de"
+            ],
+            "index": "pypi",
+            "version": "==3.0.10"
+        },
         "idna": {
             "hashes": [
                 "sha256:b307872f855b18632ce0c21c5e45be78c0ea7ae4c15c828c20788b26921eb3f6",
@@ -205,11 +213,11 @@
         },
         "optimizely-sdk": {
             "hashes": [
-                "sha256:0c586c3d866d56b602e02a6a3c99588d9e30dbad2ae37a8bbec53dd67c041859",
-                "sha256:80192702f8fed1536bd772034062bc357e89669622a69fe145cc6f627a314ea4"
+                "sha256:5dc3ad99d474d80642850a5ef1b14e58e7ebdf5380fac7c79e74c96b47a5511a",
+                "sha256:aaaf008c348a4c0e0656e6f85498cc3bc72ddfd1921beb6d998ba7eb1bd30e6f"
             ],
             "index": "pypi",
-            "version": "==3.8.0"
+            "version": "==3.9.0"
         },
         "pycparser": {
             "hashes": [
