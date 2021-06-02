@@ -3,6 +3,7 @@ from functools import reduce, wraps
 
 import jwt
 from flask import Flask, abort, g, jsonify, redirect, request, url_for
+from flask_cors import CORS
 from optimizely import optimizely
 
 logger = logging.getLogger("app")
@@ -28,6 +29,8 @@ def auth(fn):
 
 
 application = Flask(__name__)
+CORS(application)
+
 optimizely_client = optimizely.Optimizely(
     sdk_key="DPzcaJRvhpcagqKUHdM1z", logger=logger
 )
