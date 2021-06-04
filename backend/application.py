@@ -8,8 +8,7 @@ from optimizely import optimizely
 
 logger = logging.getLogger("app")
 
-JWT_SECRET = "secret"
-
+JWT_SECRET = "optimizely"
 
 def auth(fn):
     @wraps(fn)
