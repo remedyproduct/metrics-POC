@@ -49,19 +49,17 @@ export default function Login({ callback }) {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // fetch('http://localhost:8005/login', {
-    //   method: 'POST',
-    //   body: {email, country, age},
-    //   headers: {
-    //     'Content-Type': 'application/json'
-    //   }
-    // })
-    // .then(response => response.json())
-    // .then(data => {
-    //   console.log(data);
-    // });
-
-    callback(JSON.stringify({email, country, age}), {email, country, age});
+    fetch('http://localhost:8005/login', {
+      method: 'POST',
+      body: JSON.stringify({email, country, age}),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(json => json.json())
+    .then(response => {
+      callback(response.token, {email, country, age});
+    });
   }
 
   return (

@@ -16,13 +16,15 @@ def auth(fn):
     def decorator(*args, **kwargs):
         token = request.headers.get("authorization", None)
         if token is None:
-            abort(404)
+            abort(401)
 
         try:
             g.user = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
+            # force convert age json string to integer
+            g.user["age"] = int(g.user["age"])
         except jwt.InvalidTokenError as err:
             logger.error(err)
-            abort(404)
+            abort(403)
         return fn(*args, **kwargs)
 
     return decorator
@@ -58,14 +60,14 @@ def health():
 @application.route("/login", methods=["POST"])
 def login():
     email = request.json.get("email", None)
-    location = request.json.get("location", None)
+    country = request.json.get("country", None)
     age = request.json.get("age", None)
 
-    if email is None or location is None or age is None:
-        abort(404)
+    if email is None or country is None or age is None:
+        abort(422)
 
     token = jwt.encode(
-        {"email": email, "location": location, "age": age},
+        {"email": email, "country": country, "age": age},
         JWT_SECRET,
         algorithm="HS256",
     )
@@ -77,15 +79,14 @@ def login():
 @auth
 def feature():
     is_enabled = optimizely_client.is_feature_enabled(
-        "recommendations", g.user["email"], g.user
+        "ads", g.user["email"], g.user
     )
 
     if not is_enabled:
-        logger.warning("feature disabled")
         abort(404)
 
     items = optimizely_client.get_feature_variable(
-        "recommendations", "items", g.user["email"], g.user
+        "ads", "items", g.user["email"], g.user
     )
 
     return jsonify(items=items)

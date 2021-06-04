@@ -4,9 +4,7 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import Typography from '@material-ui/core/Typography';
+import Ads from './Ads';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -25,6 +23,9 @@ const useStyles = makeStyles((theme) => ({
   },
   card: {
     minWidth: 275,
+  },
+  buyButton: {
+    marginTop: theme.spacing(2),
   },
   logout: {
     margin: theme.spacing(1),
@@ -47,26 +48,22 @@ function Home({ optimizely }) {
     }
   };
 
+  const buyOnlineRedirect = (shop) => {
+    window.alert(shop);
+  };
+
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
       <div className={classes.paper}>
         <h1>Good {greeting}!</h1>
-        <OptimizelyFeature feature="recommendations">
+        <Ads />
+        <OptimizelyFeature feature="buy_online">
           {(isEnabled, variables) => {
             if (isEnabled) {
-              const items = variables['items'];
+              const shop = variables['shop'];
               return (
-                <Card className={classes.card}>
-                  <CardContent>
-                    <Typography className={classes.title} color="textSecondary" gutterBottom>
-                      ads by Optimizely
-                    </Typography>
-                    <Typography className={classes.ads} variant="h2" component="p">
-                      {items}
-                    </Typography>
-                  </CardContent>
-                </Card>
+                <Button variant="contained" onClick={() => buyOnlineRedirect(shop)} className={classes.buyButton} color="primary">BUY ONLINE</Button>
               );
             }
           }}
