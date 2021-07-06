@@ -1,4 +1,4 @@
-# System Analytics POC
+# System Analytics [Metrics] POC
 
 System Analytics demo project.
 
