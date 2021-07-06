@@ -8,6 +8,8 @@ flask = "*"
 optimizely-sdk = "*"
 pyjwt = "*"
 flask-cors = "*"
+requests = "*"
+newrelic = "*"
 
 [dev-packages]
 black = "*"

@@ -10,4 +10,5 @@ COPY ./ ./
 
 EXPOSE 5000
 
-CMD ["python", "application.py"]
+# ENTRYPOINT []
+CMD ["newrelic-admin", "run-program", "python", "application.py"]

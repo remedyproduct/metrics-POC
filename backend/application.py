@@ -6,9 +6,12 @@ from flask import Flask, abort, g, jsonify, redirect, request, url_for
 from flask_cors import CORS
 from optimizely import optimizely
 
+import requests
+
 logger = logging.getLogger("app")
 
 JWT_SECRET = "optimizely"
+
 
 def auth(fn):
     @wraps(fn)
@@ -44,11 +47,15 @@ def index():
 
 @application.route("/health")
 def health():
-    status = dict(http=True, optimizely=True)
+    status = dict(http=True, optimizely=True, ads=True)
 
     opt_config = optimizely_client.get_optimizely_config()
     if opt_config is None:
         status["optimizely"] = False
+
+    ads = requests.get("http://ads:5000/health")
+    if ads.status_code != 200:
+        status["ads"] = False
 
     return (
         jsonify(status),
@@ -77,9 +84,7 @@ def login():
 @application.route("/feature", methods=["GET"])
 @auth
 def feature():
-    is_enabled = optimizely_client.is_feature_enabled(
-        "ads", g.user["email"], g.user
-    )
+    is_enabled = optimizely_client.is_feature_enabled("ads", g.user["email"], g.user)
 
     if not is_enabled:
         abort(404)
@@ -88,7 +93,12 @@ def feature():
         "ads", "items", g.user["email"], g.user
     )
 
-    return jsonify(items=items)
+    goods_request = requests.get(f"http://ads:5000/goods?type={items}")
+
+    if goods_request.status_code != 200:
+        abort(goods_request.status_code)
+
+    return jsonify(items=items, goods=goods_request.json())
 
 
 application.run(debug=True, host="0.0.0.0")
