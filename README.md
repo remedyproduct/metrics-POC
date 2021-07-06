@@ -1,8 +1,8 @@
-# Feature Flags POC
+# System Analytics POC
 
-Feature Flags demo project.
+System Analytics demo project.
 
-Flags are managed in [Optimizely control dashboard](https://app.optimizely.com/v2/projects/18475520031/features).
+Analytics is available at [New Relic]https://newrelic.com/).
 
 ## Get Started
 0. Clone the repository.
